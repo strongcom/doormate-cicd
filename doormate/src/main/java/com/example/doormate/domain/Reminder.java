@@ -14,7 +14,7 @@ public class Reminder {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(nullable = false)
-    private int reminderId;
+    private long reminderId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     private User userId;
