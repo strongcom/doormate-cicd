@@ -1,34 +1,40 @@
 package com.example.doormate.domain;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import lombok.Getter;
+import lombok.Setter;
+
+import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
+@Getter
+@Setter
 public class Reminder {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(nullable = false)
     private int reminderId;
 
-    private int userId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    private User userId;
 
-    private int groupId;
-
+    @Column(nullable = false)
     private String title;
 
     private String content;
 
+    @Column(nullable = false)
     private LocalDateTime startDate;
 
+    @Column(nullable = false)
     private LocalDateTime endDate;
 
+    @Column(nullable = false)
     private boolean RepetitionYN;
-
+    @Column(nullable = false)
     private int RepetitionId;
 
-
+    private RepetitionPeriod repetitionPeriod;
 
 }

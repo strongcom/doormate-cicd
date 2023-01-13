@@ -6,32 +6,26 @@ import lombok.Setter;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
-
 @Entity
 @Getter
 @Setter
-public class User {
+public class CaturedImage {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(nullable = false)
-    private String userId;
+    private long catureId;
 
     @Column(nullable = false)
-    private String userName;
+    private String catureImage;
 
     @Column(nullable = false)
-    private String userPassword;
+    private LocalDateTime catureTime;
 
     @Column(nullable = false)
-    private LocalDateTime joinDate;
-
-    @Column(nullable = false)
-    private LocalDateTime lastLogin;
+    private String serialNumber;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    private Reminder reminderId;
-
-
+    private User userId;
 
 }
