@@ -9,18 +9,18 @@ import java.time.LocalDateTime;
 @Entity
 @Getter
 @Setter
-public class CaturedImage {
+public class CapturedImage {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(nullable = false)
-    private long catureId;
+    private long captureId;
 
     @Column(nullable = false)
-    private String catureImage;
+    private String captureImage;
 
     @Column(nullable = false)
-    private LocalDateTime catureTime;
+    private LocalDateTime captureTime;
 
     @Column(nullable = false)
     private String serialNumber;
