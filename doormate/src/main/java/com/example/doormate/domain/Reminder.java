@@ -32,8 +32,11 @@ public class Reminder {
 
     @Column(nullable = false)
     private boolean RepetitionYN;
+
     @Column(nullable = false)
     private int RepetitionId;
+
+    private RepetitionDay repetitionDay;
 
     private RepetitionPeriod repetitionPeriod;
 
