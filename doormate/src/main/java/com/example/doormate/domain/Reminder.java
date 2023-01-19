@@ -33,10 +33,9 @@ public class Reminder {
     private LocalDateTime endDate;
 
     @Column(nullable = false)
-    private boolean RepetitionYN;
+    private boolean repetitionYN;
 
-    @Column(nullable = false)
-    private int RepetitionId;
+    private int repetitionId;
 
     private RepetitionDay repetitionDay;
 
