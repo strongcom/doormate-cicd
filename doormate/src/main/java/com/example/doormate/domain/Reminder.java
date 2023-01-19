@@ -6,9 +6,7 @@ import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
-@AllArgsConstructor
 @NoArgsConstructor
-@Builder
 @Getter
 @Setter
 public class Reminder {
@@ -24,6 +22,9 @@ public class Reminder {
     @Column(nullable = false)
     private String title;
 
+    @Column(nullable = false)
+    private String subTitle;
+
     private String content;
 
     @Column(nullable = false)
@@ -32,13 +33,26 @@ public class Reminder {
     @Column(nullable = false)
     private LocalDateTime endDate;
 
-    @Column(nullable = false)
-    private boolean repetitionYN;
-
     private int repetitionId;
 
     private RepetitionDay repetitionDay;
 
     private RepetitionPeriod repetitionPeriod;
 
+    @Builder
+    public Reminder(long reminderId, User userId,
+                    String title, String content,
+                    LocalDateTime startDate, LocalDateTime endDate,
+                    boolean repetitionYN, int repetitionId,
+                    RepetitionDay repetitionDay, RepetitionPeriod repetitionPeriod) {
+        this.reminderId = reminderId;
+        this.userId = userId;
+        this.title = title;
+        this.content = content;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.repetitionId = repetitionId;
+        this.repetitionDay = repetitionDay;
+        this.repetitionPeriod = repetitionPeriod;
+    }
 }
