@@ -1,9 +1,11 @@
 package com.example.doormate.domain;
 
 import lombok.*;
+import org.hibernate.Hibernate;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 
 @Entity
@@ -12,18 +14,22 @@ import java.time.LocalDateTime;
 @Builder
 @Getter
 @Setter
+@EqualsAndHashCode
 public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(nullable = false)
-    private String userId;
+    private Long userId;
 
     @Column(nullable = false)
-    private String userName;
+    private String username;
 
     @Column(nullable = false)
-    private String userPassword;
+    private String password;
+
+    @Column(nullable = false)
+    private String nickname;
 
     @Column(nullable = false)
     private LocalDateTime joinDate;
@@ -32,8 +38,7 @@ public class User {
     private LocalDateTime lastLogin;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @ToString.Exclude
     private Reminder reminderId;
-
-
 
 }
