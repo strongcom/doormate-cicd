@@ -1,14 +1,16 @@
 package com.example.doormate.domain;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
+@Builder
 @Getter
-@Setter
 public class Reminder {
 
     @Id
@@ -22,37 +24,37 @@ public class Reminder {
     @Column(nullable = false)
     private String title;
 
-    @Column(nullable = false)
     private String subTitle;
 
     private String content;
 
     @Column(nullable = false)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss", timezone = "Asia/Seoul")
     private LocalDateTime startDate;
 
     @Column(nullable = false)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss", timezone = "Asia/Seoul")
     private LocalDateTime endDate;
+
 
     private int repetitionId;
 
-    private RepetitionDay repetitionDay;
-
     private RepetitionPeriod repetitionPeriod;
 
+    private String repetitionDay ;
+
     @Builder
-    public Reminder(long reminderId, User userId,
-                    String title, String content,
-                    LocalDateTime startDate, LocalDateTime endDate,
-                    boolean repetitionYN, int repetitionId,
-                    RepetitionDay repetitionDay, RepetitionPeriod repetitionPeriod) {
-        this.reminderId = reminderId;
-        this.userId = userId;
+    public Reminder(String title, String content,
+                    RepetitionPeriod repetitionPeriod, String repetitionDay) {
         this.title = title;
         this.content = content;
+        this.repetitionPeriod = repetitionPeriod;
+        this.repetitionDay = repetitionDay;
+    }
+
+    @Builder
+    public Reminder(LocalDateTime startDate, LocalDateTime endDate) {
         this.startDate = startDate;
         this.endDate = endDate;
-        this.repetitionId = repetitionId;
-        this.repetitionDay = repetitionDay;
-        this.repetitionPeriod = repetitionPeriod;
     }
 }
