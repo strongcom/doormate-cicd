@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
 
 
 @Entity
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor
 @Getter
 @Setter
 @EqualsAndHashCode
@@ -34,6 +34,7 @@ public class User {
     private LocalDateTime lastLogin;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "reminder_id")
     @ToString.Exclude
     private Reminder reminderId;
 

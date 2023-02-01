@@ -1,7 +1,10 @@
-package com.example.doormate.repository;
+package com.example.doormate.data.dao;
 
+import com.example.doormate.domain.Reminder;
 import com.example.doormate.domain.RepetitionDay;
-import com.example.doormate.dto.ReminderRequestDto;
+import com.example.doormate.dto.ReminderDto;
+import com.example.doormate.repository.ReminderRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
@@ -10,25 +13,28 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Repository
-public class ReminderRepetitionRepository{
+@RequiredArgsConstructor
+public class ReminderDao {
 
-    // 이렇게 찾은 데이터를 어떻게 합칠까...?
+    private final ReminderRepository reminderRepository;
 
+    private final HashMap<Long, Reminder> store = new HashMap<>();
 
     /*
      * 반복 등록 로직(start - end Date 가공 후, DB에 올리기) _ common
      */
 
     // startDate - endDate 사이의 모든 날짜 추출
-    public List<LocalDate> findAllDate(ReminderRequestDto reminderRequestDto) {
+    public List<LocalDate> findAllDate(ReminderDto reminderRequestDto) {
         LocalDate startDate = reminderRequestDto.getStartDate().toLocalDate();
         LocalDate endDate = reminderRequestDto.getEndDate().toLocalDate();
 
-        return startDate.datesUntil(endDate)
+        return startDate.datesUntil(endDate.plusDays(1))
                 .collect(Collectors.toList());
     }
 
@@ -56,15 +62,15 @@ public class ReminderRepetitionRepository{
      */
 
     // 반복 날짜 추출(weekly 일 때)
-    public ArrayList<LocalDate> searchRepetitionWeekly(ReminderRequestDto reminderRequestDto) {
+    public ArrayList<LocalDate> searchRepetitionWeekly(ReminderDto reminderRequestDto) {
         ArrayList<LocalDate> repetitionDate = new ArrayList<>();
 
         List<LocalDate> allDate = findAllDate(reminderRequestDto);
-
+        ArrayList<Integer> repetitionNumberList = findByRepetitionDate(reminderRequestDto);
         // 해당 날짜 사이에 반복요일에 해당하는 날짜 추출
         for (LocalDate date : allDate){
             int dateWeek = date.getDayOfWeek().getValue();
-            ArrayList<Integer> repetitionNumberList = findByRepetitionDate(reminderRequestDto);
+
             if (repetitionNumberList.contains(dateWeek)) {
                 repetitionDate.add(date);
             }
@@ -73,9 +79,10 @@ public class ReminderRepetitionRepository{
     }
 
     // 빈복 요일 추출
-    public ArrayList<Integer> findByRepetitionDate(ReminderRequestDto reminderRequestDto) {
+    public ArrayList<Integer> findByRepetitionDate(ReminderDto reminderRequestDto) {
         String repetitionDayString = reminderRequestDto.getRepetitionDay();
-        ArrayList<String> repetitionDayList = new ArrayList<>(Arrays.asList(repetitionDayString));
+        String[] split = repetitionDayString.split(" ");
+        ArrayList<String> repetitionDayList = new ArrayList<>(Arrays.asList(split));
         ArrayList<Integer> repetitionNumberList = new ArrayList<>();
 
         for (RepetitionDay repetitionDay : RepetitionDay.values()) {
@@ -91,7 +98,7 @@ public class ReminderRepetitionRepository{
      */
 
     // daily 날짜 추출
-    public ArrayList<LocalDate> searchRepetitionDaily(ReminderRequestDto reminderRequestDto) {
+    public ArrayList<LocalDate> searchRepetitionDaily(ReminderDto reminderRequestDto) {
 
         List<LocalDate> allDate = findAllDate(reminderRequestDto);
 
@@ -99,16 +106,21 @@ public class ReminderRepetitionRepository{
     }
 
     // monthly 날짜 추출
-    public ArrayList<LocalDate> searchRepetitionMonthly(ReminderRequestDto reminderRequestDto) {
+    public ArrayList<LocalDate> searchRepetitionMonthly(ReminderDto reminderRequestDto) {
         ArrayList<LocalDate> repetitionMonthly = new ArrayList<>();
 
         LocalDate startDate = reminderRequestDto.getStartDate().toLocalDate();
         LocalDate endDate = reminderRequestDto.getEndDate().toLocalDate();
+        repetitionMonthly.add(startDate);
 
         // 시작일을 기준으로 1달씩 올리면서 마지막일보다 커지면 종료
-        while (LocalDate.EPOCH.isAfter(endDate)) {
+        while (endDate.isAfter(startDate)) {
             LocalDate plusMonths = startDate.plusMonths(1);
-            repetitionMonthly.add(plusMonths);
+            if (endDate.isAfter(plusMonths)) {
+                repetitionMonthly.add(plusMonths);
+            }
+            startDate = plusMonths;
+
         }
 
         return repetitionMonthly;
@@ -116,16 +128,20 @@ public class ReminderRepetitionRepository{
 
 
     // yearly 날짜 추출
-    public ArrayList<LocalDate> searchRepetitionYearly(ReminderRequestDto reminderRequestDto) {
+    public ArrayList<LocalDate> searchRepetitionYearly(ReminderDto reminderRequestDto) {
         ArrayList<LocalDate> repetitionYearly = new ArrayList<>();
 
         LocalDate startDate = reminderRequestDto.getStartDate().toLocalDate();
         LocalDate endDate = reminderRequestDto.getEndDate().toLocalDate();
+        repetitionYearly.add(startDate);
 
         // 시작일을 기준으로 1년씩 올리면서 마지막일보다 커지면 종료
-        while (LocalDate.EPOCH.isAfter(endDate)) {
+        while (endDate.isAfter(startDate)) {
             LocalDate plusYears = startDate.plusYears(1);
-            repetitionYearly.add(plusYears);
+            if (endDate.isAfter(plusYears)) {
+                repetitionYearly.add(plusYears);
+            }
+            startDate = plusYears;
         }
         return repetitionYearly;
     }

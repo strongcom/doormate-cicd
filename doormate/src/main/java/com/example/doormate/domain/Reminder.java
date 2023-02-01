@@ -8,8 +8,6 @@ import java.time.LocalDateTime;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor
-@Builder
 @Getter
 public class Reminder {
 
@@ -19,6 +17,7 @@ public class Reminder {
     private long reminderId;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
     private User userId;
 
     @Column(nullable = false)
@@ -37,24 +36,21 @@ public class Reminder {
     private LocalDateTime endDate;
 
 
-    private int repetitionId;
+    private Long repetitionId;
 
     private RepetitionPeriod repetitionPeriod;
 
     private String repetitionDay ;
 
     @Builder
-    public Reminder(String title, String content,
-                    RepetitionPeriod repetitionPeriod, String repetitionDay) {
+    public Reminder(String title, String subTitle, String content, LocalDateTime startDate, LocalDateTime endDate, Long repetitionId, RepetitionPeriod repetitionPeriod, String repetitionDay) {
         this.title = title;
+        this.subTitle = subTitle;
         this.content = content;
-        this.repetitionPeriod = repetitionPeriod;
-        this.repetitionDay = repetitionDay;
-    }
-
-    @Builder
-    public Reminder(LocalDateTime startDate, LocalDateTime endDate) {
         this.startDate = startDate;
         this.endDate = endDate;
+        this.repetitionId = repetitionId;
+        this.repetitionPeriod = repetitionPeriod;
+        this.repetitionDay = repetitionDay;
     }
 }
