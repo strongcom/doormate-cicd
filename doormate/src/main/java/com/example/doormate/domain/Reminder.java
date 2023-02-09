@@ -1,19 +1,22 @@
 package com.example.doormate.domain;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import lombok.*;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
+import java.time.LocalTime;
 
 @Entity
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor
 @Getter
+@Setter
 public class Reminder {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(nullable = false)
     private long reminderId;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -28,29 +31,44 @@ public class Reminder {
     private String content;
 
     @Column(nullable = false)
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss", timezone = "Asia/Seoul")
-    private LocalDateTime startDate;
+    private LocalTime startTime;
 
     @Column(nullable = false)
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss", timezone = "Asia/Seoul")
-    private LocalDateTime endDate;
+    private LocalTime endTime;
 
+    @Column(nullable = false)
+    private LocalDate startDate;
 
-    private Long repetitionId;
+    @Column(nullable = false)
+    private LocalDate endDate;
 
+    @Enumerated(EnumType.STRING)
     private RepetitionPeriod repetitionPeriod;
 
-    private String repetitionDay ;
+    private String repetitionDay;
 
     @Builder
-    public Reminder(String title, String subTitle, String content, LocalDateTime startDate, LocalDateTime endDate, Long repetitionId, RepetitionPeriod repetitionPeriod, String repetitionDay) {
+    public Reminder(String title, String content, String subTitle,
+                    LocalTime startTime, LocalTime endTime,
+                    LocalDate startDate, LocalDate endDate,
+                    RepetitionPeriod repetitionPeriod, String repetitionDay) {
         this.title = title;
-        this.subTitle = subTitle;
         this.content = content;
+        this.subTitle = subTitle;
+        this.startTime = startTime;
+        this.endTime = endTime;
         this.startDate = startDate;
         this.endDate = endDate;
-        this.repetitionId = repetitionId;
         this.repetitionPeriod = repetitionPeriod;
         this.repetitionDay = repetitionDay;
+    }
+
+    public Alarm toAlarm(Reminder reminder) {
+        return Alarm.builder()
+                .reminder(reminder)
+                .noticeDate(reminder.getStartDate())
+                .startTime(reminder.getStartTime())
+                .endTime(reminder.getEndTime())
+                .build();
     }
 }
