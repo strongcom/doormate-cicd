@@ -46,4 +46,21 @@ class AlarmServiceTest {
     @Test
     void saveYearlyAlarm() {
     }
+
+    @Test
+    void deleteAlarm() {
+        ReminderDto reminderDto = new ReminderDto("주간 등록 테스트", "",
+                LocalDate.of(2022, 10, 1), LocalDate.of(2022, 12, 12),
+                LocalTime.of(12, 0), LocalTime.of(13, 0),
+                RepetitionPeriod.WEEKLY, "MON TUE FIR");
+
+        Long reminder_id = reminderService.saveReminder(reminderDto);
+
+        Message message = alarmService.saveWeeklyAlarm(reminder_id);
+
+        // when
+        alarmService.deleteAlarm(reminder_id);
+
+
+    }
 }

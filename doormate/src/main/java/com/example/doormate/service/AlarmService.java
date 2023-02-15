@@ -1,9 +1,6 @@
 package com.example.doormate.service;
 
-import com.example.doormate.domain.Alarm;
-import com.example.doormate.domain.Message;
-import com.example.doormate.domain.Reminder;
-import com.example.doormate.domain.RepetitionDay;
+import com.example.doormate.domain.*;
 import com.example.doormate.repository.AlarmRepository;
 import com.example.doormate.repository.ReminderRepository;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +24,42 @@ public class AlarmService {
     // === Alarm 테이블에 저장 === //
     @Transactional
     public Message saveAlarm(Long id) {
+        Reminder reminder = reminderRepository.findById(id).orElse(null);
+        RepetitionPeriod repetitionPeriod = reminder.getRepetitionPeriod();
+        Message message;
+
+        if (repetitionPeriod == RepetitionPeriod.DAILY) {
+            message = saveDailyAlarm(id);
+        } else if (repetitionPeriod == RepetitionPeriod.WEEKLY) {
+            message = saveWeeklyAlarm(id);
+        } else if (repetitionPeriod == RepetitionPeriod.MONTHLY) {
+            message = saveMonthlyAlarm(id);
+        } else if (repetitionPeriod == RepetitionPeriod.YEARLY) {
+            message = saveYearlyAlarm(id);
+        } else {
+            message = saveAlarm(id);
+        }
+        return message;
+    }
+
+    @Transactional
+    public Message deleteAlarm(Long id) {
+
+        alarmRepository.deleteAllByReminderReminderId(id);
+
+        return new Message("알람 삭제 완료");
+
+    }
+
+    @Transactional
+    public List<Alarm> findTodayAlarm() {
+        List<Alarm> todayAlarmList = alarmRepository.findAllByNoticeDate(LocalDate.now());
+        return todayAlarmList;
+    }
+
+
+
+    public Message saveOneAlarm(Long id) {
         Reminder findReminder = reminderRepository.findById(id).orElse(null);
         if (findReminder != null) {
             Alarm alarm = findReminder.toAlarm(findReminder);
@@ -37,7 +70,7 @@ public class AlarmService {
     }
 
     // === 반복 reminder Alarm 테이블에 저장 === //
-    @Transactional
+
     public Message saveDailyAlarm(Long savedReminderId) {
         Reminder findReminder = reminderRepository.findById(savedReminderId).orElse(null);
         List<LocalDate> allDate = findAllDate(findReminder.getStartDate(), findReminder.getEndDate());
@@ -48,7 +81,7 @@ public class AlarmService {
         return new Message("매일 알림등록 완료");
     }
 
-    @Transactional
+
     public Message saveWeeklyAlarm(Long savedReminderId) {
         Reminder findReminder = reminderRepository.findById(savedReminderId).orElse(null);
         ArrayList<Integer> repetitionDate = findByRepetitionDate(findReminder.getRepetitionDay());
@@ -66,7 +99,7 @@ public class AlarmService {
         return new Message("주간 알림등록 완료");
     }
 
-    @Transactional
+
     public Message saveMonthlyAlarm(Long savedReminderId) {
         Reminder findReminder = reminderRepository.findById(savedReminderId).orElse(null);
         List<LocalDate> allDate = findAllDate(findReminder.getStartDate(), findReminder.getEndDate());
@@ -82,7 +115,6 @@ public class AlarmService {
         return new Message("월간 알림등록 완료");
     }
 
-    @Transactional
     public Message saveYearlyAlarm(Long savedReminderId) {
         Reminder findReminder = reminderRepository.findById(savedReminderId).orElse(null);
         List<LocalDate> allDate = findAllDate(findReminder.getStartDate(), findReminder.getEndDate());
@@ -98,6 +130,7 @@ public class AlarmService {
         }
         return new Message("연간 알림등록 완료");
     }
+
 
     // startDate - endDate 사이의 모든 날짜 추출
     public List<LocalDate> findAllDate(LocalDate startDate, LocalDate endDate) {

@@ -1,7 +1,6 @@
 package com.example.doormate.controller;
 
 import com.example.doormate.domain.Message;
-import com.example.doormate.domain.RepetitionPeriod;
 import com.example.doormate.dto.ReminderDto;
 import com.example.doormate.service.AlarmService;
 import com.example.doormate.service.ReminderService;
@@ -20,33 +19,33 @@ public class ReminderController {
     @ResponseBody
     public Message create(@RequestBody ReminderDto reminderRequestDto) {
         Long savedReminderId = reminderService.saveReminder(reminderRequestDto);
-        RepetitionPeriod repetitionPeriod = reminderRequestDto.getRepetitionPeriod();
-        Message message;
-
-        if (repetitionPeriod == RepetitionPeriod.DAILY) {
-            message = alarmService.saveDailyAlarm(savedReminderId);
-        } else if (repetitionPeriod == RepetitionPeriod.WEEKLY) {
-            message = alarmService.saveWeeklyAlarm(savedReminderId);
-        } else if (repetitionPeriod == RepetitionPeriod.MONTHLY) {
-            message = alarmService.saveMonthlyAlarm(savedReminderId);
-        } else if (repetitionPeriod == RepetitionPeriod.YEARLY) {
-            message = alarmService.saveYearlyAlarm(savedReminderId);
-        } else {
-            message = alarmService.saveAlarm(savedReminderId);
-        }
-
+        Message message = alarmService.saveAlarm(savedReminderId);
         return message;
     }
 
 
-    @PutMapping
+    @PutMapping("/{id}")
     @ResponseBody
-    public Message update(@RequestBody ReminderDto reminderDto) {
-        reminderService.updateReminder(reminderDto)
+    public Message update(@PathVariable Long id, @RequestBody ReminderDto reminderDto) {
+        Long savedReminder = reminderService.updateReminder(id, reminderDto);
+        alarmService.deleteAlarm(id);
+        alarmService.saveAlarm(savedReminder);
+        return new Message("알람 수정 완료");
     }
 
-    public String findOne() {
+    @DeleteMapping("/{id}")
+    public Message delete(@PathVariable(name = "id") Long id) {
+        Message message = reminderService.deleteReminder(id);
+        return message;
+    }
+
+    /*
+    @GetMapping("/individual")
+    @ResponseBody
+    public String findOneDay() {
 
     }
+
     */
+
 }

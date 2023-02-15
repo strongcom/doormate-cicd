@@ -22,10 +22,13 @@ public class Alarm {
     @JoinColumn(name = "reminder_id")
     private Reminder reminder;
 
+    @Column(nullable = false)
     private LocalDate noticeDate;
 
+    @Column(nullable = false)
     private LocalTime startTime;
 
+    @Column(nullable = false)
     private LocalTime endTime;
 
 

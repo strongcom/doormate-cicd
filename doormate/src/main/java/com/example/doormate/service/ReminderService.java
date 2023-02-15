@@ -38,26 +38,26 @@ public class ReminderService {
     }
 
     @Transactional
-    public Message updateReminder(Long id, ReminderDto reminderDto) {
-        Optional<Reminder> reminder = reminderRepository.findById(id);
+    public Long updateReminder(Long id, ReminderDto reminderDto) {
+        Reminder reminder = reminderRepository.findById(id).orElse(null);
         // 해당 리마인더 존재 여부 확인
-        if (reminder.isPresent()) {
-            reminder.get().setTitle(reminderDto.getTitle());
-            reminder.get().setContent(reminderDto.getContent());
-            reminder.get().setSubTitle(reminderDto.toSubtitle(reminderDto));
-            reminder.get().setStartDate(reminderDto.getStartDate());
-            reminder.get().setEndDate(reminderDto.getEndDate());
-            reminder.get().setStartTime(reminderDto.getStartTime());
-            reminder.get().setEndTime(reminderDto.getEndTime());
-            reminder.get().setRepetitionPeriod(reminderDto.getRepetitionPeriod());
-            reminder.get().setRepetitionDay(reminderDto.getRepetitionDay());
-            reminderRepository.save(reminder.get());
-        }
-        return new Message(UPDATE_SUCCESS_MESSAGE);
+        reminder.setTitle(reminderDto.getTitle());
+        reminder.setContent(reminderDto.getContent());
+        reminder.setSubTitle(reminderDto.toSubtitle(reminderDto));
+        reminder.setStartDate(reminderDto.getStartDate());
+        reminder.setEndDate(reminderDto.getEndDate());
+        reminder.setStartTime(reminderDto.getStartTime());
+        reminder.setEndTime(reminderDto.getEndTime());
+        reminder.setRepetitionPeriod(reminderDto.getRepetitionPeriod());
+        reminder.setRepetitionDay(reminderDto.getRepetitionDay());
+
+        return reminder.getReminderId();
     }
 
     @Transactional
     public Message deleteReminder(Long id) {
+        // 무결성 위반 방지를 위해 자식 테이블 값 삭제 후, 리마인더 삭제
+        alarmRepository.deleteAllByReminderReminderId(id);
         reminderRepository.deleteById(id);
         return new Message(DELETE_SUCCESS_MESSAGE);
     }
