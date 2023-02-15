@@ -9,7 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Optional;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -31,10 +31,8 @@ public class ReminderService {
     }
 
     @Transactional
-    public Optional<Reminder> findOneReminder(Long id) {
-        Optional<Reminder> findReminder = reminderRepository.findById(id);
-        // 예외처리 해야함
-        return findReminder;
+    public List<Reminder> findAllReminder() {
+        return reminderRepository.findAll();
     }
 
     @Transactional
