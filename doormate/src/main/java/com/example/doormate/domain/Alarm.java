@@ -10,6 +10,7 @@ import java.time.LocalTime;
 @Getter
 @Setter
 @NoArgsConstructor
+@AllArgsConstructor
 public class Alarm {
 
     @Id
@@ -26,13 +27,6 @@ public class Alarm {
     private LocalTime startTime;
 
     private LocalTime endTime;
-
-    /**
-     * 연관관계 설정
-     */
-    public void setReminder(Reminder reminder) {
-        this.reminder = reminder;
-    }
 
 
     @Builder

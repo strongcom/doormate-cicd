@@ -4,6 +4,8 @@ import lombok.*;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 
 @Entity
@@ -33,10 +35,9 @@ public class User {
     @Column(nullable = false)
     private LocalDateTime lastLogin;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "reminder_id")
+    @OneToMany(mappedBy = "reminderId")
     @ToString.Exclude
-    private Reminder reminderId;
+    private List<Reminder> reminderId = new ArrayList<Reminder>();
 
     @Builder
     public User(Long userId, String username, String password,

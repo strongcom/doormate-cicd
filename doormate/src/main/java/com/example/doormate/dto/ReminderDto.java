@@ -2,9 +2,11 @@ package com.example.doormate.dto;
 
 import com.example.doormate.domain.Reminder;
 import com.example.doormate.domain.RepetitionPeriod;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -17,13 +19,14 @@ public class ReminderDto {
     private String title;
 
     private String content;
-
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate startDate;
-
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate endDate;
 
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm:ss", timezone = "Asia/Seoul")
     private LocalTime startTime;
-
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm:ss", timezone = "Asia/Seoul")
     private LocalTime endTime;
 
     private RepetitionPeriod repetitionPeriod;  // 반복주기(매일, 매주, 매월, 매년)
