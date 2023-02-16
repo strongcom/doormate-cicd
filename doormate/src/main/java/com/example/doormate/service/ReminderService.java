@@ -60,5 +60,4 @@ public class ReminderService {
         return new Message(DELETE_SUCCESS_MESSAGE);
     }
 
-
 }

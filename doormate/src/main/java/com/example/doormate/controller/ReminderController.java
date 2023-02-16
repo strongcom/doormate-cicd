@@ -42,13 +42,10 @@ public class ReminderController {
         return message;
     }
 
-
     @GetMapping("/individual")
     @ResponseBody
-    public void findOneDay() {
-        // 당일 날짜에 해당하는 알림 조회(알림 테이블에서 찾기)
-        // 찾은 알림 테이블의 리마인더 아이디를 찾기
-        // 찾은 리마인더 아이디를 기반으로 리마인더 정보 가져오기(제목, 울리는 시간)
+    public List<Reminder> findDay() {
+        return alarmService.findTodayAlarm();
     }
 
     @GetMapping()
@@ -56,7 +53,5 @@ public class ReminderController {
     public List<Reminder> findAll() {
         return reminderService.findAllReminder();
     }
-
-
 
 }

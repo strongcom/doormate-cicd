@@ -37,7 +37,7 @@ public class AlarmService {
         } else if (repetitionPeriod == RepetitionPeriod.YEARLY) {
             message = saveYearlyAlarm(id);
         } else {
-            message = saveAlarm(id);
+            message = saveOneAlarm(id);
         }
         return message;
     }
@@ -52,9 +52,14 @@ public class AlarmService {
     }
 
     @Transactional
-    public List<Alarm> findTodayAlarm() {
+    public List<Reminder> findTodayAlarm() {
         List<Alarm> todayAlarmList = alarmRepository.findAllByNoticeDate(LocalDate.now());
-        return todayAlarmList;
+        List<Reminder> reminders = new ArrayList<>();
+        for (Alarm alarm : todayAlarmList) {
+            Reminder reminder = alarm.getReminder();
+            reminders.add(reminder);
+        }
+        return reminders;
     }
 
 
