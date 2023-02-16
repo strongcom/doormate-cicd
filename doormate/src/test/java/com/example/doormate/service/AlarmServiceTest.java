@@ -10,8 +10,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 @SpringBootTest
 class AlarmServiceTest {
 
@@ -20,10 +18,6 @@ class AlarmServiceTest {
 
     @Autowired
     private ReminderService reminderService;
-
-    @Test
-    void saveDailyAlarm() {
-    }
 
     @Test
     void 주간_알림_등록() {
@@ -39,13 +33,6 @@ class AlarmServiceTest {
         System.out.println("message = " + message);
     }
 
-    @Test
-    void saveMonthlyAlarm() {
-    }
-
-    @Test
-    void saveYearlyAlarm() {
-    }
 
     @Test
     void deleteAlarm() {
@@ -61,6 +48,29 @@ class AlarmServiceTest {
         // when
         alarmService.deleteAlarm(reminder_id);
 
+    }
 
+    @Test
+    void findTodayAlarm() {
+        ReminderDto reminderDto = new ReminderDto("매일 알림 등록", "",
+                LocalDate.of(2023, 1, 1), LocalDate.of(2023, 12, 12),
+                LocalTime.of(12, 0), LocalTime.of(13, 0),
+                RepetitionPeriod.DAILY, "");
+
+        Long reminder_id = reminderService.saveReminder(reminderDto);
+
+        alarmService.saveWeeklyAlarm(reminder_id);
+
+        ReminderDto reminderDto1 = new ReminderDto("주간 등록 테스트", "",
+                LocalDate.of(2023, 1, 1), LocalDate.of(2023, 12, 10),
+                LocalTime.of(12, 0), LocalTime.of(13, 0),
+                RepetitionPeriod.WEEKLY, "MON TUE FIR");
+
+        Long reminder_id1 = reminderService.saveReminder(reminderDto1);
+
+        alarmService.saveWeeklyAlarm(reminder_id1);
+
+        // when
+        alarmService.findTodayAlarm();
     }
 }
